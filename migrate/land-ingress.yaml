@@ -1,8 +1,8 @@
 ﻿apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name:
-  namespace:
+  name: landing
+  namespace: landing
 spec:
   rules:
     - host: 
