@@ -64,7 +64,7 @@ metadata:
   namespace: landing
 spec:
   ports:
-    - port: 8080
+    - port:
       protocol: TCP
       targetPort: 80
   selector:
@@ -78,7 +78,7 @@ metadata:
   namespace: landing
 spec:
   rules:
-    - host: landing.apps.ocp4.example.com
+    - host: 
       http:
         paths:
           - path: /
