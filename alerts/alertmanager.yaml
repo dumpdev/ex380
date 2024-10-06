@@ -1,6 +1,12 @@
 global:
   resolve_timeout: 5m
+  smtp_smarthost: 
+  smtp_from: 
+  smtp_require_tls: 
 receivers:
+- name: 
+  email_configs:
+    - to: 
 - name: null
 route:
   group_by:
@@ -11,5 +17,5 @@ route:
   repeat_interval: 12h
   routes:
   - match:
-      alertname: Watchdog
     receiver: null
+      alertname: 

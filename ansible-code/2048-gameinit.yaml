@@ -3,38 +3,43 @@
   become: false
   vars:
     namespace: opengame
+    service_account: appcred
   module_defaults:
     group/k8s:
-     namespace: "{{ namespace }}"
+      namespace: "{{ namespace }}"
       ca_cert: "/etc/pki/tls/certs/ca-bundle.crt"
   tasks:
     - name: Create the project
-      k8s:
-      api_version: project.openshift.io/v1
+    k8s:
+        api_version: project.openshift.io/v1
         kind: Project
         name: "{{ namespace }}"
         state: present
         namespace: ""
 
-    - name: Create objects from the manifest
-      k8s:
+  - name: Create the serviceaccount {{ service_account }} objects from the manifest
+        k8s:
         state: present
-        src: "{{ playbook_dir + '/hello.yml' }}"
+        src: "{{ playbook_dir + '/object-resource-2048-Serviceaccount.yaml' }}"
+
+    - name: Assign role to the service account
+      command: >
+        oc -n {{ namespace }} adm policy add-scc-to-user anyuid -z {{ service_account }}
 
     - name: Get a info about all of the pods in the namespace
-      k8s_info:
+      k8s_infor:
         kind: Pod
 
     - name: Scale deployment up
       k8s_scale:
         kind: Deployment
-        name: ''
-        replicas: 1
+        name: app2048-deploy
+        replicas: 3
 
     - name: Get hostname of the route
       k8s_info:
         kind: Route
-        name: ''
+        name: game
       register: route
 
     - name: Test access to the app
