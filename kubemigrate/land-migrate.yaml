@@ -13,21 +13,6 @@ metadata:
   name: kubecred
   namespace: landing
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  creationTimestamp: null
-  name: system:openshift:scc:anyuid
-  namespace: landing
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: system:openshift:scc:anyuid
-subjects:
-- kind: ServiceAccount
-  name: kubecred
-  namespace: landing
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,7 +22,7 @@ metadata:
   name: landing
   namespace: landing
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: landing
@@ -50,26 +35,39 @@ spec:
     spec:
       serviceAccountName: kubecred
       containers:
-      - image: registry.ocp4.example.com:8443/developer/redhat-landing
+      - image: registry.ocp4.example.com:8443/elastois:v1
         name: redhat-landing
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         resources: {}
 status: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  creationTimestamp: "2024-09-17T15:48:24Z"
   name: landing
   namespace: landing
+  resourceVersion: "241755"
+  uid: 431d3ce2-7c40-4d04-aa28-fda16c2dec03
 spec:
+  clusterIP: 162.30.175.52
+  clusterIPs:
+  - 162.30.175.52
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
   ports:
-    - port:
-      protocol: TCP
-      targetPort: 80
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
   selector:
     app: landing
+  sessionAffinity: None
   type: ClusterIP
+status:
+  loadBalancer: {}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -78,7 +76,7 @@ metadata:
   namespace: landing
 spec:
   rules:
-    - host: 
+    - host: landing.apps.local
       http:
         paths:
           - path: /
